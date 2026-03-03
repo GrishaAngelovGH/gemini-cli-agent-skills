@@ -32,17 +32,22 @@ You are an expert in testing React applications using **Vitest** and **React Tes
 
 4.  **Accessibility (A11y):**
     *   Ensure components are accessible.
-    *   Use `vitest-axe` to catch common a11y violations automatically with `expect(container).toHaveNoViolations()`.
+    *   Use `vitest-axe` to catch common a11y violations automatically. See the example in Common Patterns below.
+
+---
 
 ## Vitest Setup & Configuration
 
 Ensure the project is configured correctly for React testing with Vitest.
 
 ### 1. Dependencies
-Recommend installing:
-`npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event vitest-axe`
+
+```bash
+npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event vitest-axe
+```
 
 ### 2. Configuration (`vite.config.ts` or `vitest.config.ts`)
+
 Enable `globals` for a Jest-like experience and set the environment to `jsdom`.
 
 ```typescript
@@ -62,45 +67,47 @@ export default defineConfig({
 ```
 
 ### 3. Setup File (`./src/test/setup.ts`)
-Extend Vitest's expect with DOM matchers.
+
+Use the side-effect import from `@testing-library/jest-dom` — this is the correct, non-redundant approach.
+Do NOT also call `expect.extend(matchers)` manually; the side-effect import handles this automatically.
 
 ```typescript
-import '@testing-library/jest-dom';
-import * as matchers from '@testing-library/jest-dom/matchers';
-import { expect } from 'vitest';
+import '@testing-library/jest-dom'; // Extends expect with DOM matchers (toBeInTheDocument, etc.)
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
-// Extends Vitest's expect method with methods from react-testing-library
-expect.extend(matchers);
-
-// Runs a cleanup after each test case (e.g. clearing jsdom)
+// Automatically cleans up the DOM after each test
 afterEach(() => {
   cleanup();
 });
 ```
 
+---
+
 ## Best Practices Checklist
 
 *   [ ] **Clean Setup:** Use `render` from RTL. Do not use `shallow` rendering.
-*   [ ] **Arrange-Act-Assert:** Structure tests clearly.
-*   [ ] **Avoid False Positives:** Ensure you are waiting for the UI to settle if needed.
+*   [ ] **Arrange-Act-Assert:** Structure every test with clear setup, action, and assertion phases.
+*   [ ] **Avoid False Positives:** Always wait for async UI to settle before asserting.
 *   [ ] **Mocks:**
-    *   Mock network requests (e.g., using MSW - Mock Service Worker) rather than mocking `fetch`/`axios` directly inside components if possible.
-    *   Use `vi.fn()` for creating spy functions.
-    *   Use `vi.mock()` for module mocking.
+    *   Use `vi.fn()` for spy/stub functions.
+    *   Use `vi.mock('module-path')` for module-level mocking (see example below).
+*   [ ] **Accessibility:** Run axe checks on all new components.
 
-## Advanced Configuration: Custom Render
+---
 
-Real-world applications rely on Providers (Theme, Auth, Redux, Router).
+## Advanced Configuration: Custom Render with Providers
 
-```javascript
-// test-utils.tsx
-import { render } from '@testing-library/react';
+Real-world apps rely on Providers (Theme, Auth, Redux, Router). Use a typed custom render utility.
+
+```typescript
+// src/test/test-utils.tsx
+import { render, RenderOptions } from '@testing-library/react';
+import { ReactElement, ReactNode } from 'react';
 import { ThemeProvider } from 'my-theme-lib';
-import { AuthProvider } from './context/auth';
+import { AuthProvider } from '../context/auth';
 
-const AllTheProviders = ({ children }) => {
+const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeProvider theme="light">
       <AuthProvider>
@@ -110,20 +117,24 @@ const AllTheProviders = ({ children }) => {
   );
 };
 
-const customRender = (ui, options) =>
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
   render(ui, { wrapper: AllTheProviders, ...options });
 
 export * from '@testing-library/react';
 export { customRender as render };
 ```
 
+---
+
 ## Common Patterns
 
 ### Testing a Form
-```javascript
+
+```typescript
 import { render, screen } from './test-utils'; // Custom render
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
+import { LoginForm } from '../components/LoginForm';
 
 test('submits form with valid data', async () => {
   const handleSubmit = vi.fn();
@@ -139,28 +150,53 @@ test('submits form with valid data', async () => {
 ```
 
 ### Testing Async Data Load
-```javascript
+
+```typescript
 import { render, screen } from '@testing-library/react';
+import { UserList } from '../components/UserList';
 
 test('displays users after loading', async () => {
   render(<UserList />);
 
-  expect(screen.getByRole('heading', { name: /loading/i })).toBeInTheDocument();
+  // Assert loading state is shown initially
+  expect(screen.getByRole('status', { name: /loading/i })).toBeInTheDocument();
 
-  // Wait for element to appear
+  // Wait for async content to appear
   const userItem = await screen.findByText(/Alice/i);
   expect(userItem).toBeInTheDocument();
-  
-  expect(screen.queryByRole('heading', { name: /loading/i })).not.toBeInTheDocument();
+
+  // Assert loading state is gone
+  expect(screen.queryByRole('status', { name: /loading/i })).not.toBeInTheDocument();
+});
+```
+
+### Mocking a Module with `vi.mock`
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
+import { UserProfile } from '../components/UserProfile';
+import * as authHook from '../hooks/useAuth';
+
+vi.mock('../hooks/useAuth');
+
+test('renders user name when authenticated', () => {
+  vi.spyOn(authHook, 'useAuth').mockReturnValue({
+    user: { name: 'Alice' },
+    isAuthenticated: true,
+  });
+
+  render(<UserProfile />);
+
+  expect(screen.getByText(/Alice/i)).toBeInTheDocument();
 });
 ```
 
 ### Testing Custom Hooks
-Logic often resides in hooks. Use `renderHook`.
 
-```javascript
+```typescript
 import { renderHook, act } from '@testing-library/react';
-import useCounter from './useCounter';
+import { useCounter } from '../hooks/useCounter';
 
 test('should increment counter', () => {
   const { result } = renderHook(() => useCounter());
@@ -173,14 +209,33 @@ test('should increment counter', () => {
 });
 ```
 
+### Accessibility Check with `vitest-axe`
+
+```typescript
+import { render } from '@testing-library/react';
+import { axe, toHaveNoViolations } from 'vitest-axe';
+import { expect } from 'vitest';
+import { LoginForm } from '../components/LoginForm';
+
+expect.extend(toHaveNoViolations);
+
+test('LoginForm has no accessibility violations', async () => {
+  const { container } = render(<LoginForm onSubmit={() => {}} />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
+---
+
 ## Debugging Tips
 
-*   **`screen.debug()`**: Prints the current DOM state to the console.
-*   **`logRoles(container)`**: Helpful to see how RTL perceives the role hierarchy of your component.
-    ```javascript
+*   **`screen.debug()`** — Prints the current DOM to the console. Use to inspect rendered output.
+*   **`logRoles(container)`** — Shows RTL's interpretation of ARIA roles in your component. Very useful when `getByRole` fails unexpectedly.
+    ```typescript
     import { logRoles } from '@testing-library/react';
-    // ... inside test
+
     const { container } = render(<MyComponent />);
-    logRoles(container);
+    logRoles(container); // inspect roles, then remove before committing
     ```
-*   **Vitest UI**: Recommend running `npx vitest --ui` for a visual test interface.
+*   **Vitest UI** — Run `npx vitest --ui` for a visual, browser-based test dashboard with watch mode.
