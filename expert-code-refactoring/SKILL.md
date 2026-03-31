@@ -1,78 +1,72 @@
 ---
 name: expert-code-refactoring
-description: "Expert code refactoring for Java, JavaScript, and React projects. Focuses on SOLID principles, design patterns, and idiomatic improvements while ensuring test stability."
+description: "Refactors Java, JavaScript, and React codebases by extracting methods, reducing coupling, applying design patterns (Factory, Strategy, Observer), eliminating duplication, and simplifying complex conditionals — all while keeping tests green. Use when the user asks to refactor code, improve code structure, apply design patterns, reduce technical debt, clean up code smells, restructure modules, or simplify complex Java/JavaScript/React code."
 ---
 
-# Refactoring Skill
+# Expert Code Refactoring
 
-This skill guides the agent in refactoring codebases by identifying technical debt and applying industry-standard patterns tailored to the specific technology stack.
+## Workflow
 
-## General Refactoring Workflow
+1. **Analyze Context:** Read the target file and its tests. Map dependencies and callers.
+2. **Verify Baseline:** Run existing tests — do not proceed until they pass.
+3. **Identify Smells:** Scan for long methods, deep nesting, duplication, tight coupling (see table below).
+4. **Plan Transformations:** Choose the smallest refactoring that removes the smell. Prefer one pattern per commit.
+5. **Apply & Re-verify:** Make the change, run tests. If tests fail, **revert the last step and try a smaller transformation**.
+6. **Repeat:** Continue until the target smells are resolved or the user's goal is met.
 
-1.  **Analyze Context:** Read the file and its associated tests. Identify dependencies and usage patterns.
-2.  **Verify Tests:** Before any changes, run existing tests to ensure a stable baseline.
-3.  **Identify Smells:** Look for long methods, deep nesting, duplicate code, or tight coupling.
-4.  **Incremental Changes:** Apply transformations in small, verifiable steps.
-5.  **Re-verify:** Run tests after each significant change.
+## Clean Code Principles
 
-## Architecture & Clean Code (Global)
-
-- **Naming:** Rename variables, functions, and classes to be descriptive and reveal intent. Avoid abbreviations.
-- **AHA Programming:** Avoid Hasty Abstractions. Only abstract code when the duplication is clear and the abstraction doesn't make the code harder to follow.
-- **Functions:** Keep functions small. Aim for a low number of parameters (prefer objects/records for many parameters).
-- **Cognitive Load:** Reduce nesting levels (aim for max 2-3 deep). Use early returns to keep the "happy path" aligned to the left.
+- Rename to reveal intent — no abbreviations.
+- AHA (Avoid Hasty Abstractions): only abstract when duplication is clear and the abstraction simplifies the code.
+- Keep functions small with few parameters (use objects/records when > 3).
+- Max 2–3 nesting levels; use early returns for the happy path.
 
 ## Refactoring for Testability
 
-- **Dependency Injection (DI):** Replace hardcoded instances or static calls with injected dependencies (via constructor or parameters).
-- **Interface Segregation:** If a class depends on a large interface but only uses one method, extract a smaller interface.
-- **Pure Functions:** Extract business logic into pure functions that don't depend on external state or side effects, making them trivial to unit test.
-- **Mocking Boundaries:** Identify "seams" where you can inject mocks (e.g., Database, Network, System Clock).
+- **Dependency Injection:** Replace hardcoded instances/static calls with constructor or parameter injection.
+- **Interface Segregation:** Extract smaller interfaces when only one method is consumed.
+- **Pure Functions:** Move business logic into pure functions for trivial unit testing.
+- **Seams for Mocking:** Identify boundaries (DB, Network, Clock) where mocks can be injected.
 
-## Legacy Code Techniques (Safe Changes)
+## Legacy Code Techniques
 
-- **Characterization Tests:** If tests are missing, write "Golden Master" tests that record the current behavior *before* changing it.
-- **Sprout Method:** When adding a feature to a messy method, write the new logic in a new, clean method and call it from the old one.
-- **Wrap Method:** Add new behavior by creating a new method with the same signature that calls the old method and then adds the new logic.
-- **Break Dependencies:** Use the "Extract and Override" pattern to isolate untestable static calls or constructors in a protected method that can be overridden in a test subclass.
+- **Characterization Tests:** Write "Golden Master" tests capturing current behavior *before* changing anything.
+- **Sprout Method:** Add new logic in a clean method; call it from the legacy one.
+- **Wrap Method:** Create a new method with the same signature that calls the old one and adds new behavior.
+- **Extract and Override:** Isolate untestable static calls in a protected method overridable in test subclasses.
 
-## Common Code Smells & Solutions
+## Code Smells Quick Reference
 
-| Smell | Description | Refactoring Pattern |
-| :--- | :--- | :--- |
-| **Magic Literals** | Hardcoded numbers/strings. | **Extract Constant** or **Enum**. |
-| **Long Method** | Method does too many things. | **Extract Method**. |
-| **Large Class** | Too many responsibilities. | **Extract Class** or **Extract Interface**. |
-| **Feature Envy** | Method uses another object's data more. | **Move Method**. |
-| **Primitive Obsession** | Using primitives for domain concepts. | **Introduce Value Object**. |
-| **Multi‑File Change Requirement** | One change affects many files. | **Move Field** or **Inline Class** to centralize. |
+| Smell | Refactoring |
+| :--- | :--- |
+| Magic Literals | Extract Constant / Enum |
+| Long Method | Extract Method |
+| Large Class | Extract Class / Interface |
+| Feature Envy | Move Method |
+| Primitive Obsession | Introduce Value Object |
+| Shotgun Surgery | Move Field / Inline Class |
 
-## Language Specifics
+## Language-Specific Guidance
 
 ### Java
-- **SOLID & Modern Features:** Use `record` (Java 14+), `sealed` classes (Java 17+), and **Switch Pattern Matching**.
-- **Streams & Optional:** Replace imperative loops with `Stream`. Use `Optional` to eliminate null checks.
-- **Immutability:** Use `final` and immutable collections (`List.of`, `Map.of`).
-- **Exception Handling:** Use try-with-resources. Avoid catching `Throwable` or `Exception` generically.
+- Prefer `record` (14+), `sealed` classes (17+), switch pattern matching.
+- Replace loops with `Stream`; eliminate null checks with `Optional`.
+- Immutable collections (`List.of`, `Map.of`); try-with-resources for I/O.
 
 ### JavaScript / TypeScript
-- **Modern Syntax:** `const` by default, destructuring, spread/rest, arrow functions.
-- **TypeScript Advanced:** **Discriminated Unions**, **Utility Types** (`Pick`, `Omit`), and **Custom Type Guards**.
-- **Data Integrity:** Use Zod or similar for runtime validation at API/IO boundaries.
-- **Async Patterns:** Prefer `Promise.all` for concurrency; avoid "async-await" inside loops where possible.
+- `const` by default; destructuring, spread/rest, arrow functions.
+- TypeScript: discriminated unions, utility types (`Pick`, `Omit`), custom type guards.
+- Zod (or similar) for runtime validation at API/IO boundaries.
+- `Promise.all` for concurrency; avoid sequential `await` in loops.
 
 ### React
-- **Component Design:** Decompose large components. Extract logic into **Custom Hooks**.
-- **State Management:** **Principle of Least Privilege** (keep state local). Avoid **Prop Drilling** with Context or Composition.
-- **Performance:** Use `useMemo`/`useCallback` for stable references. Avoid inline function definitions in props of memoized children.
-- **Testing:** Focus on user behavior and accessible roles (`getByRole`) via **React Testing Library**.
-
-## Security & Reliability
-- **Input Validation:** Sanitize and validate all external input.
-- **Secrets:** Never hardcode keys; use environment variables.
-- **Dependencies:** Update deprecated/vulnerable packages discovered during refactoring.
+- Decompose large components; extract logic into custom hooks.
+- Keep state local (Principle of Least Privilege); avoid prop drilling via Context or Composition.
+- `useMemo`/`useCallback` for stable references in memoized children.
 
 ## Constraints
-- Never change external APIs or public interfaces without explicit user permission.
+
+- Never change public APIs or interfaces without explicit user permission.
 - Always maintain or improve test coverage.
-- Adhere to the project's existing linting and formatting rules.
+- Follow the project's existing linting and formatting rules.
+- Never hardcode secrets — use environment variables.

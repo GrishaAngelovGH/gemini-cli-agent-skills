@@ -1,37 +1,37 @@
 ---
 name: project-feature-explainer
-description: Expert guidance for explaining project features. Use this skill when you need to provide a comprehensive explanation of how a specific feature works, including summaries, deep dives, usage examples, and sequence/workflow diagrams. This skill has references directory which contains additional instructions `checklist.md`, `example-output.md` and `explanation-template.md` that MUST be used for every analysis.
+description: "Generates structured feature explanations with summaries, code walkthroughs, usage examples with sample inputs/outputs, and Mermaid sequence/workflow diagrams. Uses references/explanation-template.md for output structure and references/checklist.md for verification. Use when the user asks how a feature works, requests a feature walkthrough, needs feature documentation, or wants to understand a specific capability in the codebase."
 ---
 
-# Project Feature Explainer Skill
-
-This skill provides a systematic approach to analyzing and explaining a specific feature within a codebase.
+# Project Feature Explainer
 
 ## Workflow
 
-1.  **Identify Entry Points:** Locate the main functions, classes, or API endpoints that trigger the feature.
-2.  **Trace Dependencies:** Identify the internal modules, services, or external APIs the feature relies on.
-3.  **Analyze Data Flow:** Understand how data enters the feature, how it's transformed, and where it's stored or returned.
-4.  **Draft Explanation:** Structure the explanation using the mandatory sections below.
-5.  **Verify:** Cross-reference the draft with the `references/checklist.md` to ensure completeness.
+1. **Identify Entry Points:** Use Grep to search for route definitions, exported functions, or API endpoints that trigger the feature.
+2. **Trace Dependencies:** Use Read to examine imports and identify internal modules, services, or external APIs the feature relies on.
+3. **Analyze Data Flow:** Map how data enters, transforms, and exits — note side effects (DB writes, cache invalidation, events).
+4. **Draft Explanation:** Structure output using `references/explanation-template.md`. Refer to `references/example-output.md` for formatting and depth expectations.
+5. **Verify Completeness:** Cross-reference with `references/checklist.md` before delivering.
 
 ## Mandatory Output Structure
 
 ### 1. Feature Summary
-A high-level overview (1-2 paragraphs) explaining *what* the feature does and *why* it exists.
+1–2 paragraphs: *what* the feature does and *why* it exists.
 
-### 2. Deep Dive (Technical Details)
-A detailed breakdown of the internal implementation.
-- **Key Components:** List the main files/classes/functions involved.
-- **Logic Flow:** Step-by-step description of the execution path.
-- **State Changes:** Describe any side effects (e.g., database updates, cache invalidation).
+### 2. Technical Deep Dive
+- **Key Components:** List files, classes, and functions involved with paths.
+- **Logic Flow:** Step-by-step execution path.
+- **State Changes:** Side effects (database updates, cache invalidation, events emitted).
 
 ### 3. Usage & Examples
-Code snippets or CLI commands showing how to use the feature.
-- Include common parameters and expected outputs.
-- Provide a "Happy Path" example.
+- Code snippets or CLI commands with common parameters and expected outputs.
+- Include a "Happy Path" example.
 
-## Guidelines
-- **Be Concise:** Focus on the "how" and "why" without repeating obvious code logic.
-- **Reference Code:** Use specific file paths and symbol names.
-- **Contextualize:** Explain how this feature fits into the broader system architecture.
+### 4. Sequence / Workflow Diagram
+- Include a Mermaid diagram showing the interaction between components.
+
+## References
+
+- `references/explanation-template.md` — mandatory output template.
+- `references/example-output.md` — example of a complete feature explanation.
+- `references/checklist.md` — verification checklist (use before delivering).

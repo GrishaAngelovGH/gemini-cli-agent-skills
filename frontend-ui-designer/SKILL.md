@@ -1,81 +1,65 @@
 ---
 name: frontend-ui-designer
-description: Expert guidance for creating modern, intuitive, and visually stunning user interfaces. Use this skill when designing or implementing frontend UIs, components, layout structures, or styling.
+description: "Builds responsive layouts, implements component hierarchies, applies design tokens and theming, and ensures WCAG accessibility compliance for frontend UIs. Use when the user asks to design or implement UI components, page layouts, CSS/Tailwind styling, responsive design, dark mode, forms, navigation, empty states, or skeleton loading screens."
 ---
 
-# Frontend UI Designer Instructions
+# Frontend UI Designer
 
-## 1. Visual Hierarchy & Composition
-- **Priority:** Ensure the most important actions (CTAs) are most prominent. Use size, weight, and color to guide the eye.
-- **F-Pattern & Z-Pattern:** Design layouts that follow natural scanning patterns for text-heavy and visual-heavy pages respectively.
-- **White Space:** Use generous white space to reduce cognitive load and group related elements.
-- **Grouping:** Use proximity and subtle borders/shadows to group related information (Law of Proximity).
+## Design Workflow
 
-## 2. Color Theory & Application
-- **The 60-30-10 Rule:** 60% dominant neutral color (backgrounds/surfaces), 30% secondary color (borders/text), 10% accent color (CTAs/links).
-- **Contrast:** Maintain WCAG AA/AAA compliance. Use high-contrast ratios for readability.
-- **Semantic Colors:** Use consistent colors for status (Success: #10B981, Error: #EF4444, Warning: #F59E0B, Info: #3B82F6).
-- **Dark Mode Support:** Ensure all colors have a dark mode equivalent. Use lighter grays (e.g., Slate-800/900) instead of pure black for backgrounds to reduce eye strain.
-- **Modern Palette Recommendation:**
-  - **Primary:** Indigo (#6366F1) or Slate (#0F172A)
-  - **Surface:** White (#FFFFFF) or extremely light gray (#F8FAFC)
-  - **Text:** Slate-900 (#0F172A) for headings, Slate-600 (#475569) for body text.
+When asked to design or implement a UI:
 
-## 3. Typography
-- **Font Pairing:** Use modern sans-serif fonts like 'Inter', 'Geist', 'Roboto', or 'SF Pro Display'. Limit to two font families.
-- **Scale:** Use a modular scale (e.g., Major Third).
-  - H1: 2.25rem (36px), Bold
-  - H2: 1.875rem (30px), Semi-bold
-  - H3: 1.5rem (24px), Semi-bold
-  - Body: 1rem (16px), Regular
-  - Small: 0.875rem (14px), Medium
-- **Line Height:** 1.5 - 1.6 for body text to ensure readability; tighter (1.2-1.3) for headings.
+1. **Establish layout** — choose grid/flex structure, set container widths, apply 8pt spacing grid.
+2. **Apply color palette** — 60-30-10 rule, semantic status colors, dark mode equivalents.
+3. **Set typography** — font pairing, modular scale, line heights.
+4. **Build components** — forms, empty states, skeletons, navigation patterns.
+5. **Add interactions** — hover states, transitions (150–300ms), loading feedback.
+6. **Validate accessibility** — keyboard nav, touch targets ≥44px, semantic HTML, ARIA labels, WCAG contrast.
 
-## 4. Layout & Spacing
-- **8pt Grid System:** Use 4, 8, 16, 24, 32, 48, 64px for all spacing. This creates a rhythmic, professional feel.
-- **Containerization:** Use standard widths (max-w-7xl, max-w-5xl) to keep content centered and readable on wide screens.
-- **Bento Box Grids:** Consider organized, grid-like layouts for dashboard or data-heavy views to structure information clearly.
-- **Responsive Design:** Always consider Mobile-First. Use flexible flex/grid layouts.
+## Visual Hierarchy
 
-## 5. Modern UI Trends & Techniques (2025/2026)
-- **Soft Shadows & Depth:** Use `box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);` instead of harsh borders.
-- **Glassmorphism:** For overlays/navbars, use `background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);`.
-- **Subtle Gradients:** Use very subtle linear gradients (e.g., Slate-50 to White) or mesh gradients to add depth without distraction.
-- **Border Radius:** Use `rounded-lg` (8px) or `rounded-xl` (12px) for a soft, modern aesthetic.
-- **Micro-interactions:** Add purposeful motion (hover states, button clicks, loading skeletons) to provide feedback and delight. Keep animations fast (150-300ms).
+- Make CTAs most prominent via size, weight, and color.
+- Use generous white space and proximity-based grouping.
 
-## 6. Component Patterns & Polishing
-- **Form Design:**
-  - **Single Column:** Preferred for readability and mobile-friendliness.
-  - **Labels:** Always visible above inputs (avoid placeholders as labels).
-  - **Validation:** Real-time inline validation with clear error messages.
-  - **Autofill:** Support appropriate autocomplete attributes.
-- **Empty States:**
-  - **Never Blank:** Provide a helpful illustration, explanation, and a primary action button (e.g., "No projects yet. [Create Project]").
-  - **Educational:** Use this space to teach users about the feature.
-- **Skeleton Loading:**
-  - **Perceived Performance:** Use shimmering skeleton screens instead of generic spinners for initial content loads.
-  - **Structure:** Mimic the final layout (image, title, text lines) to reduce layout shift (CLS).
-- **Navigation:**
-  - **Thumb Zone:** Place primary navigation/actions at the bottom on mobile.
-  - **Gestures:** Support common gestures like "swipe to go back" or "swipe to dismiss".
+## Color
 
-## 7. Accessibility & Inclusivity (A11y)
-- **Keyboard Navigation:** Ensure all interactive elements are focusable and have visible focus states (e.g., `ring-2 ring-offset-2`).
-- **Touch Targets:** Minimum touch target size of 44x44px (or 48x48px) for mobile users.
-- **Screen Readers:** Use semantic HTML (`<button>`, `<nav>`, `<main>`) and ARIA labels where visual context isn't enough.
-- **Neurodiversity:** Offer clear, distraction-free modes where possible. Avoid autoplaying media.
+- **60-30-10:** 60% neutral (backgrounds), 30% secondary (borders/text), 10% accent (CTAs).
+- **Semantic:** Success #10B981, Error #EF4444, Warning #F59E0B, Info #3B82F6.
+- **Dark mode:** Use Slate-800/900 (not pure black) for backgrounds.
+- **Suggested palette:** Primary Indigo #6366F1, Surface #F8FAFC, Headings Slate-900 #0F172A, Body Slate-600 #475569.
 
-## 8. Best Practices & UX
-- **Affordance:** Buttons should look clickable. Links should be clearly identifiable.
-- **Feedback:** Provide immediate visual feedback for all user actions (loading states, success toasts, error messages).
-- **Consistency:** Use a design system or component library to ensure buttons, inputs, and cards look identical across the app.
-- **Ethical Design:** Avoid dark patterns. Be transparent about data usage and provide easy opt-outs.
+## Typography
 
-# Available Resources
-- [Refactoring UI](https://www.refactoringui.com/) - Practical design tips.
-- [Google Material 3](https://m3.material.io/) - Design system reference.
-- [Lucide Icons](https://lucide.dev/) - Clean, consistent icon set.
-- [Adobe Color](https://color.adobe.com/) - Palette generation.
-- [Coolors.co](https://coolors.co/) - Fast color schemes.
-- [WCAG Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/) - Accessibility standards.
+- Fonts: Inter, Geist, Roboto, or SF Pro Display — max 2 families.
+- Scale (Major Third): H1 2.25rem bold, H2 1.875rem semi-bold, H3 1.5rem semi-bold, Body 1rem, Small 0.875rem.
+- Line height: 1.5–1.6 for body, 1.2–1.3 for headings.
+
+## Layout & Spacing
+
+- **8pt grid:** 4, 8, 16, 24, 32, 48, 64px for all spacing.
+- Standard container widths (max-w-7xl, max-w-5xl). Mobile-first with flex/grid.
+- Bento-box grids for dashboards and data-heavy views.
+
+## Modern Techniques
+
+- **Shadows:** `box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);` over harsh borders.
+- **Glassmorphism:** `background: rgba(255,255,255,0.7); backdrop-filter: blur(10px);` for overlays.
+- **Borders:** `rounded-lg` (8px) or `rounded-xl` (12px).
+
+## Component Patterns
+
+- **Forms:** Single column, visible labels above inputs, inline validation, autocomplete attributes.
+- **Empty states:** Illustration + explanation + primary action button.
+- **Skeleton loading:** Shimmer screens mimicking final layout to reduce CLS.
+- **Navigation:** Primary actions in thumb zone on mobile; support swipe gestures.
+
+## Accessibility
+
+- Keyboard: all interactive elements focusable with visible focus rings (`ring-2 ring-offset-2`).
+- Touch targets: ≥44×44px (48×48px preferred).
+- Semantic HTML (`<button>`, `<nav>`, `<main>`) + ARIA labels where needed.
+- Immediate visual feedback for all actions (loading, success, error).
+
+## Resources
+
+- [Refactoring UI](https://www.refactoringui.com/), [Material 3](https://m3.material.io/), [Lucide Icons](https://lucide.dev/), [Adobe Color](https://color.adobe.com/), [Coolors](https://coolors.co/), [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)
